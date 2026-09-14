@@ -345,4 +345,333 @@ Availability
 ```
 
 For AI engineering, the goal is not simply calling an LLM. It is choosing and controlling the right model for each task.
-    
+
+Correct. **Providing context to the model is one of the most important LLM API skills.** It should be explicitly included in your roadmap.
+
+### Context means information you send with the request.
+
+```text
+System instructions
+        +
+Conversation history
+        +
+User request
+        +
+Retrieved documents
+        +
+Tool results
+        ↓
+      LLM
+```
+
+For example:
+
+```python
+response = client.responses.create(
+    model="gpt-5",
+    instructions="You are a Python tutor.",
+    input="""
+    Previous context:
+    The student is learning functions.
+
+    Current question:
+    Explain callbacks using a simple example.
+    """
+)
+```
+
+For chat APIs, context commonly comes through `messages`:
+
+```python
+messages = [
+    {"role": "system", "content": "You are a Python tutor."},
+    {"role": "user", "content": "I am learning functions."},
+    {"role": "assistant", "content": "Functions allow reusable code."},
+    {"role": "user", "content": "Explain callbacks."}
+]
+```
+
+You need to master **context management** too.
+
+* Conversation history.
+* System instructions.
+* User context.
+* Retrieved RAG documents.
+* Tool outputs.
+* Context window limits.
+* Token budgeting.
+* Truncation.
+* Summarization.
+* Relevant context selection.
+* Preventing unnecessary context.
+
+This is actually the foundation for **RAG, agents, memory, and production LLM applications**.
+
+## Production LLM API concepts
+
+These are what separate a simple LLM script from a reliable AI application.
+
+### 1. Timeouts
+
+A timeout prevents your application from waiting forever.
+
+```python
+response = client.responses.create(
+    model="gpt-5",
+    input="Explain RAG.",
+    timeout=30
+)
+```
+
+If the provider takes longer than 30 seconds, your application stops waiting.
+
+Why important.
+
+```text
+Your app -> LLM
+              ↓
+         provider hangs
+              ↓
+Without timeout -> request stays stuck
+With timeout    -> request fails safely
+```
+
+You must understand connection timeout, read timeout, total timeout, and choosing reasonable values.
+
+---
+
+### 2. Retries
+
+Sometimes an API fails temporarily.
+
+Examples.
+
+```text
+Network failure
+Temporary server error
+Rate limit
+Provider overload
+```
+
+Instead of immediately failing, retry.
+
+```python
+for attempt in range(3):
+    try:
+        response = client.responses.create(...)
+        break
+    except Exception:
+        if attempt == 2:
+            raise
+```
+
+Production systems usually use **exponential backoff**.
+
+```text
+Attempt 1 -> immediately
+Attempt 2 -> wait 1 second
+Attempt 3 -> wait 2 seconds
+Attempt 4 -> wait 4 seconds
+```
+
+Do not blindly retry every error. Authentication or invalid requests usually will not be fixed by retrying.
+
+---
+
+### 3. Rate limits
+
+Providers limit how frequently you can call their APIs.
+
+For example.
+
+```text
+100 requests/minute
+1,000,000 tokens/minute
+```
+
+Your application may suddenly receive a rate limit error.
+
+You therefore need.
+
+```text
+Detect rate limit
+      ↓
+Wait
+      ↓
+Retry with backoff
+      ↓
+Continue
+```
+
+Also learn request per minute, token per minute, concurrency limits, and handling `429` responses.
+
+---
+
+### 4. Fallback models
+
+Never assume your primary model will always be available.
+
+```text
+Primary model
+     ↓ failure
+Fallback model
+     ↓ failure
+Second fallback
+     ↓
+Error response
+```
+
+Example.
+
+```python
+models = ["powerful-model", "cheap-model"]
+
+for model in models:
+    try:
+        response = client.responses.create(
+            model=model,
+            input="Explain embeddings."
+        )
+        break
+    except Exception:
+        continue
+```
+
+Real systems choose fallbacks based on failure type, capability, cost, and latency.
+
+---
+
+### 5. Logging
+
+Your AI application should record what happened.
+
+Useful information.
+
+```text
+Request ID
+Model
+Timestamp
+Latency
+Success/failure
+Input tokens
+Output tokens
+Error type
+Tool calls
+User request category
+```
+
+Example.
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logging.info("Calling model")
+logging.info("Model response received")
+```
+
+Never log API keys or sensitive user information.
+
+---
+
+### 6. Cost tracking
+
+Every LLM request can consume money.
+
+Track.
+
+```text
+Input tokens
+Output tokens
+Model price
+Total request cost
+Daily cost
+Monthly cost
+Cost per user
+Cost per feature
+```
+
+Conceptually.
+
+```text
+Request
+   ↓
+Token usage
+   ↓
+Price calculation
+   ↓
+Cost record
+   ↓
+Database / dashboard
+```
+
+This lets you discover that one expensive feature is consuming most of your budget.
+
+---
+
+### 7. Async API calls
+
+Normal code waits for one request to finish.
+
+```python
+response = client.responses.create(...)
+```
+
+Async code allows other work while waiting.
+
+```python
+response = await client.responses.create(...)
+```
+
+This matters when your application handles many users.
+
+```text
+User A -> waiting for LLM
+User B -> waiting for LLM
+User C -> waiting for LLM
+
+Async server
+     ↓
+handles all efficiently
+```
+
+With FastAPI, async becomes especially important.
+
+### The production flow you should master
+
+```text
+User request
+     ↓
+Validation
+     ↓
+LLM API call
+     ↓
+Timeout protection
+     ↓
+Retry with backoff
+     ↓
+Rate limit handling
+     ↓
+Fallback model
+     ↓
+Response validation
+     ↓
+Logging
+     ↓
+Cost tracking
+     ↓
+Response to user
+```
+
+Mastering this flow means you are no longer just learning how to call an LLM. You are learning how to **operate an LLM service reliably in production**.
+
+**5. OpenRouter**
+
+Since you are already using OpenRouter, master:
+
+- [x] Listing models.
+- [x] Filtering free models.
+- [x] Calling different models through one interface.
+- [x] Reading pricing and context limits.
+- [x] Handling provider and model errors.
