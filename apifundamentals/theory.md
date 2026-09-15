@@ -124,7 +124,8 @@ Python
 
 Then we should implement each part manually with Python before using an SDK. ```
 
-# 7. Python SDK 
+
+## 7. Python SDK 
 
 An SDK (Software Development Kit) is a collection of tools, libraries, and code examples that help developers build applications for a specific platform, system, or service.
 
