@@ -1,0 +1,326 @@
+# ============================================================================
+# Root .gitignore — Python (FastAPI/uv) + Node (Next.js) monorepo
+# Goal: never leak system data, secrets, credentials, local env, or machine
+# state. Safe templates (*.example) are explicitly allow-listed.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. Environment variables & secrets — NEVER commit
+# ----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.test.example
+*.local.env
+
+# dotenv vault / encrypted vault keys (keep the vault id, not the key)
+.env.vault
+.env*.key
+.vault-token
+
+# Secret / credential files
+*secret*
+*secrets*.json
+*secrets*.yaml
+*secrets*.yml
+credentials*.json
+credentials*.yaml
+credentials*.yml
+config/secrets/*
+secrets/
+.vault/
+token*.json
+*token*.txt
+auth.json
+serviceAccount*.json
+*-key.json
+*service-account*.json
+
+# Private keys, certificates, keystores
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ppk
+*.asc
+*.gpg
+*.age
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+known_hosts
+.ssh/
+
+# Cloud provider credentials (never commit these)
+.aws/
+.azure/
+.gcp/
+.gcloud/
+kubeconfig
+.kube/
+*.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# gpg / password stores
+.gnupg/
+*.kdbx
+
+# ----------------------------------------------------------------------------
+# 2. Python / FastAPI / uv
+# ----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Virtual environments (both names are used in this repo: backend/venv + .venv)
+.venv/
+venv/
+ENV/
+env/
+.env-venv/
+.conda/
+conda-meta/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+.eggs/
+wheels/
+sdist/
+
+# uv / pip
+.uv/
+uv-cache/
+pip-wheel-metadata/
+*.log.bak
+__pypackages__/
+
+# Keep lockfiles — do NOT ignore these:
+#   !uv.lock
+#   !requirements*.txt
+#   !pyproject.toml
+
+# Testing / coverage / type-check / lint caches
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+coverage/
+*.cover
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.pyre/
+.pytype/
+cProfile/
+*.prof
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ----------------------------------------------------------------------------
+# 3. Node.js / Next.js (frontend/app)
+# ----------------------------------------------------------------------------
+node_modules/
+.npm/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+.pnp
+.pnp.*
+.pnpm-store/
+.pnpm-debug.log*
+package-lock.json.bak
+yarn-error.log*
+
+# Next.js build output
+.next/
+out/
+build/
+.next/cache/
+*.tsbuildinfo
+next-env.d.ts
+
+# Vite / Nuxt / generic FE build
+dist/
+.nuxt/
+.output/
+.turbo/
+.parcel-cache/
+.vite/
+.cache/
+
+# Testing / coverage (JS)
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+cypress/screenshots/
+cypress/videos/
+storybook-static/
+
+# Debug logs (npm / yarn / pnpm)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Misc JS
+.eslintcache
+.stylelintcache
+.parcel-cache
+
+# Vercel / Netlify / deployment
+.vercel
+.netlify
+.netlify/state.json
+now.json
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Keep lockfiles — do NOT ignore these:
+#   !package-lock.json
+#   !yarn.lock
+#   !pnpm-lock.yaml
+
+# ----------------------------------------------------------------------------
+# 4. Databases & local data (often contain PII / system data)
+# ----------------------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.sqlite3-journal
+*.db
+*.db-journal
+*.rdb
+*.aof
+dump.rdb
+data/
+db.sqlite3
+*.mdb
+*.accdb
+
+# Uploads / user content generated at runtime
+uploads/
+media/
+staticfiles/
+
+# ----------------------------------------------------------------------------
+# 5. OS / filesystem metadata (leaks usernames, paths, machine info)
+# ----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ----------------------------------------------------------------------------
+# 6. Editors / IDEs (leak absolute paths, hostnames, history)
+# ----------------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.iml
+*.iws
+*.ipr
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+.vim/
+*.swp
+*.swo
+*~
+*.orig
+*.rej
+\#*\#
+.\#*
+.project
+.classpath
+.settings/
+*.launch
+nbproject/
+.vs/
+*.user
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+
+# Vim / Emacs / nano backups
+*.bak
+*.tmp
+*.temp
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+*~.nib
+
+# ----------------------------------------------------------------------------
+# 7. Logs, temp, runtime state
+# ----------------------------------------------------------------------------
+*.log
+logs/
+log/
+tmp/
+temp/
+.tmp/
+.cache/
+.parcel-cache/
+*.pid
+*.seed
+*.pid.lock
+nohup.out
+
+# App runtime (pidfiles, sockets, local server state)
+*.sock
+*.fifo
+pids/
+run/*.pid
+
+# ----------------------------------------------------------------------------
+# 8. Misc — never commit local machine state
+# ----------------------------------------------------------------------------
+history/
+.histories/
+*History*.txt
+.sql_history
+.psql_history
+.mysql_history
+.sqlite_history
+.lesshst
+.viminfo
+.node_repl_history
+.python_history
