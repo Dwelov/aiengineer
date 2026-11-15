@@ -20,5 +20,14 @@ models = client.models.list()
 for model in models.data:
     print(model.id)
     
+#making my first request
 
+response = client.chat.completions.create(
+    model="gemini-3.1-flash-lite",
+    messages=[
+        {"role":"user", "content":"Hello, how are you?"}
+    ],
+    max_tokens=50
+)
 
+print(response.choices[0].message.content)
