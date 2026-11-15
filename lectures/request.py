@@ -34,14 +34,5 @@ print(response.choices[0].message.content)
 
 print("\n")
 
-#now practising the sampling parameters 
-# it controls how the AI model will select the next token based on the list of predicted tokens
-# core sampling parameters include 
-# 1. Temperature
-# 2. Top-p
-# 3. Top-k
-# 4. Max tokens
-# 5. Stop sequences
-# 6. Presence penalty
-# 7. Frequency penalty
+
 
